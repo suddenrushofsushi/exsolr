@@ -51,6 +51,7 @@ defmodule Exsolr.Searcher do
   defp build_solr_query_params(params) do
     params
     |> add_default_params
+    |> ensure_uri_encoding
     |> Enum.map(fn({key, value}) -> build_solr_query_parameter(key, value) end)
     |> Enum.join("&")
   end
@@ -58,6 +59,10 @@ defmodule Exsolr.Searcher do
   defp add_default_params(params) do
     default_parameters
     |> Keyword.merge(params)
+  end
+
+  defp ensure_uri_encoding(params) do
+    params |> List.keyreplace(:q, 0, {:q, URI.encode(params[:q])})
   end
 
   defp default_parameters do
